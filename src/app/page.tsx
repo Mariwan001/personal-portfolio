@@ -1,95 +1,126 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import React from 'react';
+
+import { Heading, Flex, Text, Button,  Avatar, RevealFx } from '@/once-ui/components';
+import { Projects } from '@/app/work/components/Projects';
+
+import { about, baseURL, home, newsletter, person, routes } from '@/app/resources'
+import { Mailchimp } from '@/app/components';
+import { Posts } from '@/app/blog/components/Posts';
+
+export function generateMetadata() {
+	const title = home.title;
+	const description = home.description;
+	const ogImage = `https://${baseURL}/og?title=${encodeURIComponent(title)}`;
+
+	return {
+		title,
+		description,
+		openGraph: {
+			title,
+			description,
+			type: 'website',
+			url: `https://${baseURL}`,
+			images: [
+				{
+					url: ogImage,
+					alt: title,
+				},
+			],
+		},
+		twitter: {
+			card: 'summary_large_image',
+			title,
+			description,
+			images: [ogImage],
+		},
+	};
+}
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+	return (
+		<Flex
+			maxWidth="m" fillWidth gap="xl"
+			direction="column" alignItems="center">
+			<script
+				type="application/ld+json"
+				suppressHydrationWarning
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify({
+						'@context': 'https://schema.org',
+						'@type': 'WebPage',
+						name: home.title,
+						description: home.description,
+						url: `https://${baseURL}`,
+						image: `${baseURL}/og?title=${encodeURIComponent(home.title)}`,
+						publisher: {
+							'@type': 'Person',
+							name: person.name,
+							image: {
+								'@type': 'ImageObject',
+								url: `${baseURL}${person.avatar}`,
+							},
+						},
+					}),
+				}}
+			/>
+			<Flex
+				fillWidth
+				direction="column"
+				paddingY="l" gap="m">
+				
+					<Flex
+						direction="column"
+						fillWidth maxWidth="s" gap="m">
+						<RevealFx translateY="4">
+							<Heading
+								wrap="balance"
+								variant="display-strong-l">
+								{home.headline}
+							</Heading>
+						</RevealFx>
+						<RevealFx translateY="8" delay={0.2}>
+							<Text
+								wrap="balance"
+								onBackground="neutral-weak"
+								variant="body-default-l">
+								{home.subline}
+							</Text>
+						</RevealFx>
+						<RevealFx translateY="12" delay={0.4}>
+							<Button
+								data-border="rounded"
+								href="/about"
+								variant="tertiary"
+								suffixIcon="chevronRight"
+								size="m">
+								<Flex
+									gap="8"
+									alignItems="center">
+									{about.avatar.display && (
+										<Avatar
+											style={{marginLeft: '-0.75rem', marginRight: '0.25rem'}}
+											src={person.avatar}
+											size="m"/>
+										)}
+										About me
+								</Flex>
+							</Button>
+						</RevealFx>
+					</Flex>
+				
+			</Flex>
+			<RevealFx translateY="16" delay={0.6}>
+				<Projects range={[1,1]}/>
+			</RevealFx>
+			{routes['/blog'] && (
+				<Flex fillWidth paddingX="20">
+					<Posts range={[1,2]} columns="2"/>
+				</Flex>
+			)}
+			<Projects range={[2]}/>
+			{ newsletter.display &&
+				<Mailchimp/>
+			}
+		</Flex>
+	);
 }
